@@ -176,6 +176,28 @@ async def get_attendance(
         } for l in logs]
     }
 
+@app.post("/detect")
+async def detect_mask(file: UploadFile = File(...)):
+    logger.info("Received frame for real-time analysis.")
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    if frame is None:
+        return {"mask": False, "confidence": 0.0, "error": "Invalid image"}
+
+    results = detector.detect_and_process(frame)
+    
+    if len(results) > 0:
+        # Return the first detection for simplicity in this mode
+        res = results[0]
+        return {
+            "mask": res["mask_status"] == "Mask",
+            "confidence": res["mask_confidence"]
+        }
+    
+    return {"mask": False, "confidence": 0.0, "message": "No face detected"}
+
 @app.post("/recognize")
 async def recognize_face(file: UploadFile = File(...)):
     contents = await file.read()
