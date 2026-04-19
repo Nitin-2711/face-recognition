@@ -1,5 +1,6 @@
 import os
 import requests
+import bz2
 
 def download_file(url, folder):
     if not os.path.exists(folder):
@@ -10,7 +11,7 @@ def download_file(url, folder):
     
     if os.path.exists(filepath):
         print(f"[INFO] {filename} already exists.")
-        return
+        return filepath
 
     print(f"[INFO] Downloading {filename}...")
     r = requests.get(url, stream=True)
@@ -20,26 +21,47 @@ def download_file(url, folder):
                 if chunk:
                     f.write(chunk)
         print(f"[INFO] {filename} downloaded.")
+        return filepath
     else:
         print(f"[ERROR] Failed to download {filename}.")
+        return None
 
 def setup():
-    # Face Detector Files (Caffe model)
+    # Face Detector Files
     face_proto = "https://raw.githubusercontent.com/opencv/opencv/master/samples/dnn/face_detector/deploy.prototxt"
     face_model = "https://github.com/opencv/opencv_3rdparty/raw/dnn_samples_face_detector_20170830/res10_300x300_ssd_iter_140000.caffemodel"
     
-    detector_folder = "backend/data/face_detector"
+    data_dir = "backend/data"
+    detector_folder = os.path.join(data_dir, "face_detector")
     download_file(face_proto, detector_folder)
     download_file(face_model, detector_folder)
     
-    # Violation folder
-    os.makedirs("backend/data/violations", exist_ok=True)
+    # Facial Landmarks for Liveness (Blink Detection)
+    landmarks_url = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
+    bz2_path = download_file(landmarks_url, data_dir)
     
-    # Dataset placeholders
-    os.makedirs("backend/data/dataset/with_mask", exist_ok=True)
-    os.makedirs("backend/data/dataset/without_mask", exist_ok=True)
+    if bz2_path and bz2_path.endswith(".bz2"):
+        print("[INFO] Decompressing landmarks...")
+        dat_path = bz2_path.replace(".bz2", "")
+        if not os.path.exists(dat_path):
+            with bz2.BZ2File(bz2_path) as fr, open(dat_path, "wb") as fw:
+                shutil_copyfileobj(fr, fw)
+            print("[INFO] Landmarks decompressed.")
+        os.remove(bz2_path)
+
+    # Directories
+    os.makedirs(os.path.join(data_dir, "violations"), exist_ok=True)
+    os.makedirs(os.path.join(data_dir, "profiles"), exist_ok=True)
     
-    print("[SUCCESS] Setup complete. Please put your training images in backend/data/dataset/ and run train.py")
+    print("[SUCCESS] Production setup complete.")
+
+import shutil
+def shutil_copyfileobj(fsrc, fdst, length=16*1024):
+    while True:
+        buf = fsrc.read(length)
+        if not buf:
+            break
+        fdst.write(buf)
 
 if __name__ == "__main__":
     setup()
