@@ -1,0 +1,88 @@
+/Users/nitinkumar/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/nitinkumar/Developer/Web_Project/face-recognition/backend/app/main.py:55: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [9604]
+INFO:     Waiting for application startup.
+INFO:SecuTrack:Starting SecuTrack Server...
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[INFO] Loading face detector from /Users/nitinkumar/Developer/Web_Project/face-recognition/backend/data/face_detector/deploy.prototxt
+[WARNING] No mask model found at /Users/nitinkumar/Developer/Web_Project/face-recognition/backend/data/mask_detector.model. Running without mask detection.
+[INFO] Initialized 0 authorized users.
+INFO:     127.0.0.1:50466 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50468 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50470 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50470 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50471 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50472 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50473 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50477 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50477 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50478 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50479 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50479 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50480 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50485 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50485 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50486 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50488 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50488 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50489 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50491 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50491 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50493 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50493 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50494 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50495 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50495 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50496 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50499 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50499 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50500 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50503 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50503 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50504 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50505 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50505 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50506 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50507 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50507 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50508 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50509 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50509 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50510 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50511 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50511 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50512 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50516 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50516 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50517 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50521 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50521 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50522 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50523 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50523 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50524 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50525 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50525 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50526 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50527 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50527 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50528 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50529 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50529 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50530 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50531 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50531 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50532 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50535 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50535 - "GET /attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50536 - "GET /users HTTP/1.1" 200 OK
