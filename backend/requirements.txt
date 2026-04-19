@@ -17,3 +17,4 @@ sqlalchemy
 openpyxl
 jinja2
 python-slugify
+websockets

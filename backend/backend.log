@@ -7,9 +7,10 @@
         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
         
   @app.on_event("startup")
-INFO:     Started server process [12514]
+INFO:     Started server process [12861]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:51126 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51127 - "GET /health HTTP/1.1" 200 OK
+[INFO] Liveness detection (blink) enabled.
+INFO:     127.0.0.1:51209 - "POST /api/users HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51221 - "GET /health HTTP/1.1" 200 OK
