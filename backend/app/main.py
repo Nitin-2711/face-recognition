@@ -145,6 +145,44 @@ async def get_attendance(
         } for l in logs]
     }
 
+@app.post("/recognize")
+async def recognize_face(file: UploadFile = File(...)):
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if frame is None: return []
+    return detector.detect_and_process(frame)
+
+@app.post("/log-attendance")
+async def log_manual_attendance(
+    background_tasks: BackgroundTasks,
+    user_id: Optional[int] = Form(None),
+    status: str = Form("Recognized"),
+    file: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    # Retrieve user or handle unknown
+    name = "Unknown"
+    if user_id:
+        user = db.query(User).get(user_id)
+        if user: name = user.name
+    
+    # Placeholder box for manual log
+    box = [0, 0, 100, 100] 
+    
+    # Process image if provided, else dummy
+    frame = None
+    if file:
+        contents = await file.read()
+        nparr = np.frombuffer(contents, np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    if frame is None:
+        frame = np.zeros((100, 100, 3), dtype=np.uint8)
+
+    save_attendance(name, "Scanning", 0.0, frame, box)
+    return {"status": "success", "message": f"Attendance logged for {name}"}
+
 @app.get("/stats")
 async def get_stats(db: Session = Depends(get_db)):
     total_users = db.query(User).count()
