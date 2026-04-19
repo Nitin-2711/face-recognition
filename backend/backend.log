@@ -92,3 +92,24 @@ INFO:     127.0.0.1:51267 - "GET /api/stats HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:51267 - "GET /api/stats HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:51267 - "GET /api/users HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:51271 - "GET /api/users HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51323 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51336 - "GET /attendance?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51352 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51352 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51352 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "POST /api/recognize HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "POST /api/recognize HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "POST /api/recognize HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "POST /api/recognize HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51352 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51357 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51370 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51370 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51376 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51372 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51372 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51383 - "GET /stats HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51391 - "GET /users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51400 - "GET /attendance?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51378 - "GET /attendance HTTP/1.1" 200 OK

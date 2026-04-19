@@ -145,6 +145,26 @@ async def get_attendance(
         } for l in logs]
     }
 
+@app.get("/stats")
+async def get_stats(db: Session = Depends(get_db)):
+    total_users = db.query(User).count()
+    
+    # Today's attendance
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    present_today = db.query(Attendance).filter(Attendance.timestamp >= today_start).distinct(Attendance.user_id).count()
+    
+    # Unknown detections (those without a user_id or where we log unknown)
+    unknown_detections = db.query(Attendance).filter(Attendance.user_id == None).count()
+    
+    attendance_rate = (present_today / total_users * 100) if total_users > 0 else 0
+    
+    return {
+        "total_users": total_users,
+        "present_today": present_today,
+        "unknown_detections": unknown_detections,
+        "attendance_rate": attendance_rate
+    }
+
 @app.get("/users")
 async def list_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
