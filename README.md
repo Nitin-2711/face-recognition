@@ -1,82 +1,101 @@
-# 😷 MaskGuard AI - Face Mask Detection System
+# 😷 Face Mask Detection System
 
-A high-accuracy (~95%+) real-time face mask detection system built with deep learning (MobileNetV2) and a modern glassmorphism dashboard.
+A high-performance, real-time minimalist Face Mask Detection system built to quickly identify whether an individual is wearing a face mask. Featuring an ultra-modern 'glassmorphism' UI and a robust Python-based AI core, this project provides instant safety compliance checks.
 
-## 🚀 Features
-- **Real-time Detection:** Process webcam feed with minimal latency.
-- **High Accuracy:** Uses MobileNetV2 Transfer Learning for robust classification.
-- **Smart Dashboard:** Premium UI with glassmorphism, real-time stats, and violation logs.
-- **Automated Alerts:** Snapshots captured and logged automatically for violations.
-- **Data Export:** Capability to track compliance over time.
+## ✨ Features
 
----
+- **Real-Time Mask Detection:** Streams webcam frames and processes them seamlessly with ultra-low latency.
+- **Image Upload Analysis:** Audit static reference images through a localized deep learning API.
+- **Premium User Interface:** A minimalist, portfolio-grade frontend built with Next.js and Tailwind CSS featuring dynamic color-coded result badges.
+- **Microservice Architecture:** Independent frontend and backend layers ensuring scalability and separation of concerns.
 
-## 🛠️ Tech Stack
-- **Backend:** Python, FastAPI, TensorFlow/Keras, OpenCV.
-- **Frontend:** Next.js, Tailwind CSS, Lucide Icons.
-- **Model:** MobileNetV2 (Pre-trained on ImageNet).
+## 🛠 Tech Stack
 
----
+**Frontend:**
+- [Next.js](https://nextjs.org/) (React Framework)
+- [Tailwind CSS](https://tailwindcss.com/) (Styling & Glassmorphism)
+- [Lucide React](https://lucide.dev/) (Icons)
 
-## 📂 Project Structure
-```text
-/backend
-  /app
-    main.py         # FastAPI WebSocket & API
-    detector.py     # Inference Logic
-  /data             # Models, Violations, & Dataset
-  setup.py          # Setup script (Downloads Face Detector)
-  train.py          # Training script
-  requirements.txt
-/frontend
-  /src
-    /app            # Next.js Pages
-    /components     # UI Components
+**Backend:**
+- [FastAPI](https://fastapi.tiangolo.com/) (Python API Wrapper)
+- [OpenCV](https://opencv.org/) (Image Preprocessing & Face Detection)
+- [TensorFlow / Keras](https://www.tensorflow.org/) (MobileNetV2 Mask Detection Model)
+
+## 📸 Screenshots
+
+> *(Insert a screenshot of the Next.js UI showing the `MASK DETECTED` green badge here)*
+> 
+> *(Insert a screenshot of the Next.js UI showing the `NO MASK` red badge here)*
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/face-mask-detection.git
+cd face-mask-detection
 ```
 
----
-
-## 🏁 Quick Start
-
-### 1. Backend Setup
+### 2. Backend Setup
 ```bash
 cd backend
+# Create virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate
+
+# Install requirements
 pip install -r requirements.txt
-python setup.py          # Downloads pre-trained face detector
+
+# Start the Fast API server
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 2. Model Training (Optional/Required)
-To train the mask detector with your own data:
-1. Place images in `backend/data/dataset/with_mask` and `backend/data/dataset/without_mask`.
-2. Run training:
-```bash
-python train.py
-```
-*Note: A pre-trained model path is expected at `backend/data/mask_detector.model`.*
-
-### 3. Run the Backend
-```bash
-python -m app.main
-```
-
-### 4. Frontend Setup
+### 3. Frontend Setup
+Open a new terminal window / tab.
 ```bash
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start the Next.js development server
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
----
+## 💻 Usage Instructions
 
-## 🎨 UI Preview
-- **Dark Mode:** Deep slate & indigo theme.
-- **Glassmorphism:** Frosted glass panels with blur effects.
-- **Live Feed:** Overlaid bounding boxes (Green for Mask, Red for No Mask).
+1. Ensure both your backend (`localhost:8000`) and frontend (`localhost:3000`) are running.
+2. Open your browser and navigate to `http://localhost:3000`.
+3. Click **"Start Camera"** to initialize live scanning, or click **"Upload Photo"** to analyze a specific picture.
+4. The system will process the image immediately and display a glowing Result Badge indicating Mask compliance.
 
----
+## 📁 Folder Structure
 
-## ⚠️ Important Notes
-- Ensure your webcam is available and permissions are granted in the browser.
-- The system is optimized for **MobileNetV2**, providing a balance between speed and accuracy.
-- For production, deploy the backend behind an SSL/TLS proxy for camera access.
+```
+face-mask-detection/
+├── backend/                  # Python API Core
+│   ├── app/
+│   │   ├── main.py           # FastAPI entry point
+│   │   └── detector.py       # Core OpenCV/TensorFlow logic
+│   ├── data/                 # Caffe & Keras Models
+│   └── requirements.txt      # Python dependencies
+├── frontend/                 # Next.js Application
+│   ├── src/
+│   │   └── app/
+│   │       ├── page.tsx      # Unified minimalist UI
+│   │       ├── layout.tsx
+│   │       └── globals.css   # Global Tailwind styles
+│   ├── package.json
+│   └── tailwind.config.ts
+└── README.md
+```
+
+## 🌟 Future Improvements
+- Migration from HTTP Polling to WebRTC for even faster streaming.
+- Incorporation of a lightweight edge model (.tflite) directly into the browser to reduce backend overhead.
+
+## 👤 Author
+
+Developed by **[Your Name/Nitin Kumar]**
+- [LinkedIn](#)
+- [GitHub](#)
+- [Portfolio](#)
