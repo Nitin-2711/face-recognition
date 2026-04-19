@@ -985,3 +985,7 @@ cv2.error: OpenCV(4.13.0) /Users/xperience/GHA-OpenCV-Python/_work/opencv-python
 
 INFO:     127.0.0.1:51632 - "GET /health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51632 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14097]

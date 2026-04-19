@@ -14,7 +14,7 @@ class MaskAndFaceDetector:
         self.data_dir = os.path.join(self.base_dir, "data")
         
         if mask_model_path is None:
-            self.mask_model_path = os.path.join(self.data_dir, "mask_detector.model")
+            self.mask_model_path = os.path.join(self.data_dir, "mask_detector.keras")
         else:
             self.mask_model_path = mask_model_path
             
@@ -62,67 +62,96 @@ class MaskAndFaceDetector:
             self.known_face_names.append(user.name)
 
     def detect_and_process(self, frame, eye_cache=None):
-        if self.face_net is None: return []
+        if self.face_net is None: 
+            return []
         
+        if frame is None or frame.size == 0:
+            return []
+
         (h, w) = frame.shape[:2]
-        blob = cv2.dnn.blobFromImage(frame, 1.0, (160, 160), (104.0, 177.0, 123.0))
-        self.face_net.setInput(blob)
-        detections = self.face_net.forward()
+        # SSD Face Detector works best with 300x300
+        blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300), (104.0, 177.0, 123.0))
+        
+        try:
+            self.face_net.setInput(blob)
+            detections = self.face_net.forward()
+        except cv2.error as e:
+            print(f"[ERROR] Face detection failed: {e}")
+            return []
 
         results = []
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        rgb_frame = None
+        gray = None
 
         for i in range(0, detections.shape[2]):
             confidence = detections[0, 0, i, 2]
 
-            if confidence > 0.6: # Increased for production robustness
+            if confidence > 0.5: # Slightly lower threshold for better recall, filtered later if needed
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                 (startX, startY, endX, endY) = box.astype("int")
                 (startX, startY) = (max(0, startX), max(0, startY))
                 (endX, endY) = (min(w - 1, endX), min(h - 1, endY))
 
+                # Ensure box is valid
+                if endX <= startX or endY <= startY:
+                    continue
+
                 # --- LIVENESS DETECTION (BLINK) ---
                 is_live = False
                 ear = 0.0
                 if self.predictor:
+                    if gray is None:
+                        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    
                     rect = dlib.rectangle(startX, startY, endX, endY)
-                    shape = self.predictor(gray, rect)
-                    shape = np.array([[p.x, p.y] for p in shape.parts()])
-                    
-                    leftEye = shape[self.lStart:self.lEnd]
-                    rightEye = shape[self.rStart:self.rEnd]
-                    leftEAR = self.eye_aspect_ratio(leftEye)
-                    rightEAR = self.eye_aspect_ratio(rightEye)
-                    ear = (leftEAR + rightEAR) / 2.0
-                    
-                    # If EAR < 0.2, it's a blink or closed eyes
-                    # Production systems use a state machine over multiple frames
-                    # Here we return EAR and the calling app handles the "session" liveness
-                    is_live = ear > 0.15 # Minimum EAR to consider "not a still photo"
+                    try:
+                        shape = self.predictor(gray, rect)
+                        shape_np = np.array([[p.x, p.y] for p in shape.parts()])
+                        
+                        leftEye = shape_np[self.lStart:self.lEnd]
+                        rightEye = shape_np[self.rStart:self.rEnd]
+                        leftEAR = self.eye_aspect_ratio(leftEye)
+                        rightEAR = self.eye_aspect_ratio(rightEye)
+                        ear = (leftEAR + rightEAR) / 2.0
+                        
+                        is_live = ear > 0.15 
+                    except Exception as e:
+                        print(f"[WARNING] Liveness predictor failed: {e}")
 
                 # --- MASK DETECTION ---
-                mask_label = "Scanning"
+                mask_label = "Checking..."
                 mask_conf = 0.0
                 if self.mask_net:
                     face_roi = frame[startY:endY, startX:endX]
                     if face_roi.size > 0:
-                        face_roi = cv2.resize(cv2.cvtColor(face_roi, cv2.COLOR_BGR2RGB), (224, 224))
-                        face_roi = img_to_array(face_roi)
-                        face_roi = preprocess_input(face_roi)
-                        preds = self.mask_net.predict(np.expand_dims(face_roi, axis=0), verbose=0)[0]
-                        mask_label = "Mask" if preds[0] > preds[1] else "No Mask"
-                        mask_conf = float(max(preds))
+                        try:
+                            face_roi = cv2.resize(cv2.cvtColor(face_roi, cv2.COLOR_BGR2RGB), (224, 224))
+                            face_roi = img_to_array(face_roi)
+                            face_roi = preprocess_input(face_roi)
+                            preds = self.mask_net.predict(np.expand_dims(face_roi, axis=0), verbose=0)[0]
+                            mask_label = "Mask" if preds[0] > preds[1] else "No Mask"
+                            mask_conf = float(max(preds))
+                        except Exception as e:
+                            print(f"[ERROR] Mask detection failed: {e}")
+                else:
+                    mask_label = "System Ready" # If model not loaded but face found
 
                 # --- IDENTITY ---
-                face_location = (startY, endX, endY, startX)
                 name = "Unknown"
                 if self.known_face_encodings:
-                    encodings = face_recognition.face_encodings(rgb_frame, [face_location])
-                    if encodings:
-                        matches = face_recognition.compare_faces(self.known_face_encodings, encodings[0], tolerance=0.45)
-                        if True in matches:
-                            name = self.known_face_names[matches.index(True)]
+                    if rgb_frame is None:
+                        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    
+                    face_location = (startY, endX, endY, startX)
+                    try:
+                        encodings = face_recognition.face_encodings(rgb_frame, [face_location])
+                        if encodings:
+                            matches = face_recognition.compare_faces(self.known_face_encodings, encodings[0], tolerance=0.45)
+                            if True in matches:
+                                first_match_index = matches.index(True)
+                                name = self.known_face_names[first_match_index]
+                    except Exception as e:
+                        print(f"[WARNING] Recognition failed: {e}")
 
                 results.append({
                     "box": [int(startX), int(startY), int(endX), int(endY)],

@@ -30,15 +30,16 @@ FaceID Pro is a full-stack, AI-powered attendance management system. It uses com
 | **Styling** | Tailwind CSS + Framer Motion | Premium Glassmorphism & Animations |
 | **Backend** | FastAPI (Python) | High-performance asynchronous API |
 | **Computer Vision** | OpenCV + Face_Recognition | Image processing & ML recognition |
+| **AI Engine** | TensorFlow (CNN) + Dlib | Mask Detection & Facial Landmarks |
 | **Database** | SQLite + SQLAlchemy | Lightweight SQL storage |
 | **Data Processing**| Pandas + NumPy | Handling logs and numerical data |
 
 ---
 
 ## ⚙️ How it Works (System Workflow)
-1. **Registration**: The user's face is captured → Processed via `face_recognition` library → 128-d vector embedding (encoding) is generated → Saved in the backend.
-2. **Scanning**: The system runs a loop capturing frames from the webcam.
-3. **Matching**: Each frame is compared against saved encodings using "Euclidean Distance". If it's below a threshold (usually 0.6), the face is "Recognized".
+1. **Inference**: Frames are streamed via WebSocket → SSD Face Detector identifies faces → MobileNetV2 checks for masks → EAR script verifies liveness.
+2. **Identification**: Verified live faces are matched against saved encodings.
+3. **Protocol Enforcement**: Logs only if identity is verified AND liveness is detected.
 4. **Recording**: Once recognized, the backend checks the last entry; if the user hasn't marked attendance today, a new row is inserted in SQLite.
 5. **Frontend Sync**: The Next.js frontend fetches logs via REST API and updates the UI instantly using WebSockets or periodic polling.
 

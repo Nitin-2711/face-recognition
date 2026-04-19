@@ -18,3 +18,6 @@ openpyxl
 jinja2
 python-slugify
 websockets
+scipy
+dlib
+tf-keras

@@ -20,7 +20,7 @@ def create_model():
     
     data_dir = "backend/data"
     os.makedirs(data_dir, exist_ok=True)
-    model_path = os.path.join(data_dir, "mask_detector.model")
+    model_path = os.path.join(data_dir, "mask_detector.keras")
     
     print(f"[INFO] Saving model to {model_path}...")
     model.save(model_path)

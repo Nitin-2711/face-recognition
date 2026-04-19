@@ -26,7 +26,18 @@ Base.metadata.create_all(bind=engine)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("SecuTrack")
 
-app = FastAPI(title="SecuTrack AI Production")
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Initializing SecuTrack AI Core...")
+    refresh_faces()
+    yield
+    # Shutdown
+    logger.info("Shutting down SecuTrack AI Core...")
+
+app = FastAPI(title="SecuTrack AI Production", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,62 +51,82 @@ app.mount("/static", StaticFiles(directory=DATA_DIR), name="static")
 
 detector = MaskAndFaceDetector()
 last_log_time = {} 
-session_liveness = {} # Name -> Bool (True if blink detected in session)
+session_liveness = {} 
 
 def refresh_faces():
-    db = next(get_db())
-    users = db.query(User).all()
-    detector.update_known_faces(users)
-
-@app.on_event("startup")
-async def startup_event():
-    refresh_faces()
+    try:
+        db = next(get_db())
+        users = db.query(User).all()
+        detector.update_known_faces(users)
+        logger.info(f"Loaded {len(users)} known identities.")
+    except Exception as e:
+        logger.error(f"Failed to refresh faces: {e}")
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "liveness_enabled": detector.predictor is not None}
+    return {
+        "status": "online", 
+        "liveness_ready": detector.predictor is not None,
+        "mask_engine": "loaded" if detector.mask_net else "unavailable"
+    }
 
 @app.websocket("/ws/stream")
 async def process_stream(websocket: WebSocket, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     await websocket.accept()
+    logger.info("New biometric stream established.")
     try:
         while True:
             data = await websocket.receive_text()
-            if "," not in data: continue
             
-            _, encoded = data.split(",", 1)
-            nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            if frame is None: continue
+            # Robust extraction of base64
+            if "base64," in data:
+                _, encoded = data.split("base64,", 1)
+            elif "," in data:
+                _, encoded = data.split(",", 1)
+            else:
+                encoded = data
 
-            detections = detector.detect_and_process(frame)
-
-            for det in detections:
-                name = det["name"]
-                if name == "Unknown": continue
+            try:
+                # Optimized decoding
+                nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
+                frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
                 
-                # Production Anti-Spoofing: Require at least one blink (or high EAR variance) 
-                # to mark a session as "live". For this demo, we check if ear < 0.2 at any point.
-                if det["ear"] < 0.20:
-                    session_liveness[name] = True
-                    
-                is_live_verified = session_liveness.get(name, False)
+                if frame is None or frame.size == 0:
+                    continue
 
-                if is_live_verified:
-                    now = datetime.now()
-                    mask = det["mask_status"]
-                    
-                    if name not in last_log_time or (now - last_log_time[name]) > timedelta(minutes=15):
-                        last_log_time[name] = now
-                        # Use BackgroundTasks for Non-Blocking I/O
-                        background_tasks.add_task(save_attendance, name, mask, det["mask_confidence"], frame, det["box"])
+                detections = detector.detect_and_process(frame)
 
-            await websocket.send_json({
-                "results": detections,
-                "timestamp": datetime.now().isoformat()
-            })
+                for det in detections:
+                    name = det["name"]
+                    if name == "Unknown": continue
+                    
+                    # Require liveness verification before logging
+                    if det["ear"] < 0.20:
+                        session_liveness[name] = True
+                        
+                    is_live_verified = session_liveness.get(name, False)
+
+                    if is_live_verified:
+                        now = datetime.now()
+                        mask = det["mask_status"]
+                        
+                        # Throttle logging per person
+                        if name not in last_log_time or (now - last_log_time[name]) > timedelta(minutes=15):
+                            last_log_time[name] = now
+                            background_tasks.add_task(save_attendance, name, mask, det["mask_confidence"], frame, det["box"])
+
+                await websocket.send_json({
+                    "results": detections,
+                    "timestamp": datetime.now().isoformat()
+                })
+            except Exception as e:
+                logger.error(f"Frame processing error: {e}")
+                await websocket.send_json({"error": "Failed to process frame"})
+                
     except WebSocketDisconnect:
-        pass
+        logger.info("Biometric stream disconnected.")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
 
 def save_attendance(name, mask, conf, frame, box):
     # This runs in background to prevent video lag
